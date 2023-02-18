@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.chrome.geolance.ui.theme.GeolanceTheme
-import com.chrome.geolance.ui.theme.presentation.navigation.NavGraph
+import com.chrome.geolance.navigation.NavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

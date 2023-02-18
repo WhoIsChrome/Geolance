@@ -1,9 +1,10 @@
-package com.chrome.geolance.ui.theme.presentation.navigation
+package com.chrome.geolance.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.chrome.geolance.authorization.presentation.HomeScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -12,7 +13,7 @@ fun NavGraph(navController: NavHostController) {
         startDestination = Screen.Authorization.route
     ) {
         composable(route = Screen.Authorization.route) {
-
+            HomeScreen(navController = navController)
         }
     }
 }

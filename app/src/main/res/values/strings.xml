@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Geolance</string>
+    <string name="authorization_title">Вход</string>
+    <string name="authorization_email_label">Email</string>
+    <string name="authorization_password_label">Password</string>
+    <string name="authorization_email_placeholder">example@example.com</string>
+    <string name="authorization_password_placeholder">************</string>
 </resources>
