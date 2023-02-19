@@ -5,35 +5,41 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.chrome.geolance.R
 import com.chrome.geolance.ui.theme.GeolanceTheme
 
 @Composable
-fun AuthorizationForm(
+fun AuthorizationForm() {
+    val viewModel: AuthorizationViewModel = hiltViewModel()
+    val state = viewModel.uiState.collectAsState().value
+
+    UI(state = state,onEvent = { viewModel.onEvent(it) })
+}
+
+@Composable
+fun UI(
+    state: AuthorizationState,
+    onEvent: (AuthorizationEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var emailTextState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
+    var emailTextState by remember {
+        mutableStateOf("")
     }
 
-    var passwordTextState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
+    var passwordTextState by remember {
+        mutableStateOf("")
     }
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -85,14 +91,16 @@ fun AuthorizationForm(
             )
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    onEvent(AuthorizationEvent.SignInClick(emailTextState, passwordTextState))
+                },
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(percent = 50)
             ) {
                 Text(
-                    text = "Войти",
+                    text = stringResource(R.string.authorization_signin),
                     fontSize = 16.sp,
                     color = MaterialTheme.colors.onPrimary,
                     modifier = modifier.padding(top = 16.dp, bottom = 16.dp)
@@ -104,8 +112,14 @@ fun AuthorizationForm(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(text = "Зарегистрироваться", color = MaterialTheme.colors.primary)
-                Text(text = "Забыли пароль?", color = MaterialTheme.colors.primary)
+                Text(
+                    text = stringResource(R.string.authorization_signup),
+                    color = MaterialTheme.colors.primary
+                )
+                Text(
+                    text = stringResource(R.string.authorization_forgot_password),
+                    color = MaterialTheme.colors.primary
+                )
             }
         }
     }
@@ -115,6 +129,7 @@ fun AuthorizationForm(
 @Composable
 fun AuthorizationFormPreview() {
     GeolanceTheme {
-        AuthorizationForm()
+        AuthorizationForm(
+        )
     }
 }
