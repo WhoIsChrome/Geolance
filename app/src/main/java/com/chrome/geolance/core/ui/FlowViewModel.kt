@@ -1,4 +1,4 @@
-package com.chrome.geolance.core
+package com.chrome.geolance.core.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
