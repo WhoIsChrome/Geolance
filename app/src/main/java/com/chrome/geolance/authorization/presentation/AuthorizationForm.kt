@@ -15,27 +15,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chrome.geolance.R
+import com.chrome.geolance.authorization.domain.model.AuthorizationUiState
+import com.chrome.geolance.authorization.presentation.AuthorizationEvent.*
+import com.chrome.geolance.core.ui.hiltViewModelPreviewSafe
+import com.chrome.geolance.core.ui.uiStatePreviewSafe
 import com.chrome.geolance.ui.theme.GeolanceTheme
 
 @Composable
-fun AuthorizationForm(
+fun AuthorizationForm() {
+    val viewModel: AuthorizationViewModel? = hiltViewModelPreviewSafe()
+
+    val state = uiStatePreviewSafe(viewModel = viewModel, ::previewState)
+
+    UI(
+        state = state,
+        onEmailChanged = { viewModel?.onEvent(EmailChanged(it)) },
+        onPasswordChanged = { viewModel?.onEvent(PasswordChanged(it)) },
+        onSignInClick = { email, password ->
+            viewModel?.onEvent(
+                SignInClick(
+                    email,
+                    password
+                )
+            )
+        }
+    )
+}
+
+@Composable
+fun UI(
+    state: AuthorizationUiState,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onSignInClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var emailTextState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
-    }
-
-    var passwordTextState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
-    }
-
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     Surface(
@@ -54,8 +73,8 @@ fun AuthorizationForm(
             )
 
             OutlinedTextField(
-                value = emailTextState,
-                onValueChange = { emailTextState = it },
+                value = state.email,
+                onValueChange = { onEmailChanged(it) },
                 label = { Text(text = stringResource(R.string.authorization_email_label)) },
                 placeholder = { Text(text = stringResource(R.string.authorization_email_placeholder)) },
                 modifier = modifier
@@ -64,8 +83,8 @@ fun AuthorizationForm(
             )
 
             OutlinedTextField(
-                value = passwordTextState,
-                onValueChange = { passwordTextState = it },
+                value = state.password,
+                onValueChange = { onPasswordChanged(it) },
                 label = { Text(text = stringResource(R.string.authorization_password_label)) },
                 placeholder = { Text(text = stringResource(R.string.authorization_password_placeholder)) },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -85,14 +104,16 @@ fun AuthorizationForm(
             )
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    onSignInClick(state.email, state.password)
+                },
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(percent = 50)
             ) {
                 Text(
-                    text = "Войти",
+                    text = stringResource(R.string.authorization_signin),
                     fontSize = 16.sp,
                     color = MaterialTheme.colors.onPrimary,
                     modifier = modifier.padding(top = 16.dp, bottom = 16.dp)
@@ -104,8 +125,14 @@ fun AuthorizationForm(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(text = "Зарегистрироваться", color = MaterialTheme.colors.primary)
-                Text(text = "Забыли пароль?", color = MaterialTheme.colors.primary)
+                Text(
+                    text = stringResource(R.string.authorization_signup),
+                    color = MaterialTheme.colors.primary
+                )
+                Text(
+                    text = stringResource(R.string.authorization_forgot_password),
+                    color = MaterialTheme.colors.primary
+                )
             }
         }
     }
@@ -118,3 +145,10 @@ fun AuthorizationFormPreview() {
         AuthorizationForm()
     }
 }
+
+private fun previewState(): AuthorizationUiState =
+    AuthorizationUiState(
+        isLoading = false,
+        email = "email",
+        password = "password",
+    )

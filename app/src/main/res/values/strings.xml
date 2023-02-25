@@ -5,4 +5,7 @@
     <string name="authorization_password_label">Password</string>
     <string name="authorization_email_placeholder">example@example.com</string>
     <string name="authorization_password_placeholder">************</string>
+    <string name="authorization_signin">Войти</string>
+    <string name="authorization_signup">Зарегистрироваться</string>
+    <string name="authorization_forgot_password">Забыли пароль?</string>
 </resources>

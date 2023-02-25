@@ -14,7 +14,7 @@ import com.chrome.geolance.ui.theme.AppThemeColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun HomeScreen(
+fun AuthorizationScreen(
     navController: NavHostController,
     viewModel: AuthorizationViewModel = hiltViewModel()
 ) {
