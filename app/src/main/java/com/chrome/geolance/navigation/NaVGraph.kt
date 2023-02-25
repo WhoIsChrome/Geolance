@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.chrome.geolance.authorization.presentation.HomeScreen
+import com.chrome.geolance.authorization.presentation.AuthorizationScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -13,7 +13,7 @@ fun NavGraph(navController: NavHostController) {
         startDestination = Screen.Authorization.route
     ) {
         composable(route = Screen.Authorization.route) {
-            HomeScreen(navController = navController)
+            AuthorizationScreen(navController = navController)
         }
     }
 }

@@ -23,6 +23,11 @@ inline infix fun <A, B, C> Either<A, C>.mapLeft(f: (A) -> B): Either<B, C> = whe
     is Either.Right -> this
 }
 
+inline fun <A, B, C> Either<A, B>.fold(ifLeft: (A) -> C, ifRight: (B) -> C): C = when (this) {
+    is Either.Left -> ifLeft(value)
+    is Either.Right -> ifRight(value)
+}
+
 fun <A, B> Either<A, B>.leftOrNull(): A? =
     when (this) {
         is Either.Left -> value

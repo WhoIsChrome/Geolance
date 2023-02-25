@@ -1,24 +1,76 @@
 package com.chrome.geolance.authorization.presentation
 
-import com.chrome.geolance.core.FlowViewModel
+import androidx.lifecycle.viewModelScope
+import com.chrome.geolance.authorization.domain.model.AuthorizationUiState
+import com.chrome.geolance.authorization.domain.usecase.SignInUseCase
+import com.chrome.geolance.core.fold
+import com.chrome.geolance.core.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthorizationViewModel @Inject constructor() :
-    FlowViewModel<AuthorizationState, AuthorizationEvent>() {
+class AuthorizationViewModel @Inject constructor(
+    private val signInUseCase: SignInUseCase,
+) : BaseViewModel<AuthorizationUiState, AuthorizationEvent>() {
 
-    override val initialUi: AuthorizationState
-        get() = AuthorizationState(null)
-
-    override val uiFlow: Flow<AuthorizationState>
-        get() = TODO("Not yet implemented")
+    override fun createInitialState(): AuthorizationUiState =
+        AuthorizationUiState(
+            isLoading = false,
+            email = "",
+            password = "",
+        )
 
     override suspend fun handleEvent(event: AuthorizationEvent) {
-        when(event) {
-            is AuthorizationEvent.SignInClick -> TODO()
+        when (event) {
+            is AuthorizationEvent.SignInClick -> handleSignInClicked(event)
+            is AuthorizationEvent.EmailChanged -> handleEmailChanged(event)
+            is AuthorizationEvent.PasswordChanged -> handlePasswordChanged(event)
         }
     }
 
+    private fun handleEmailChanged(event: AuthorizationEvent.EmailChanged) {
+        viewModelScope.launch {
+            setState(
+                currentStateValue.copy(
+                    email = event.email
+                )
+            )
+        }
+    }
+
+    private fun handlePasswordChanged(event: AuthorizationEvent.PasswordChanged) {
+        viewModelScope.launch {
+            setState(
+                currentStateValue.copy(
+                    password = event.password
+                )
+            )
+        }
+    }
+
+    private fun handleSignInClicked(event: AuthorizationEvent.SignInClick) {
+        viewModelScope.launch {
+            setState(
+                currentStateValue.copy(
+                    isLoading = true
+                )
+            )
+            signInUseCase(event.email, event.password).fold(
+                ifLeft = {
+                    Timber.d("SignIn failed")
+                    setState(
+                        currentStateValue.copy(
+                            isLoading = false,
+                            error = ""
+                        )
+                    )
+                },
+                ifRight = {
+                    Timber.d("SignIn successfully: $it")
+                }
+            )
+        }
+    }
 }

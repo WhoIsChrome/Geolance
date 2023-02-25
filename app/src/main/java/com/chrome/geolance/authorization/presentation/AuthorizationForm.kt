@@ -5,8 +5,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,32 +19,42 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.chrome.geolance.R
+import com.chrome.geolance.authorization.domain.model.AuthorizationUiState
+import com.chrome.geolance.authorization.presentation.AuthorizationEvent.*
+import com.chrome.geolance.core.ui.hiltViewModelPreviewSafe
+import com.chrome.geolance.core.ui.uiStatePreviewSafe
 import com.chrome.geolance.ui.theme.GeolanceTheme
 
 @Composable
 fun AuthorizationForm() {
-    val viewModel: AuthorizationViewModel = hiltViewModel()
-    val state = viewModel.uiState.collectAsState().value
+    val viewModel: AuthorizationViewModel? = hiltViewModelPreviewSafe()
 
-    UI(state = state,onEvent = { viewModel.onEvent(it) })
+    val state = uiStatePreviewSafe(viewModel = viewModel, ::previewState)
+
+    UI(
+        state = state,
+        onEmailChanged = { viewModel?.onEvent(EmailChanged(it)) },
+        onPasswordChanged = { viewModel?.onEvent(PasswordChanged(it)) },
+        onSignInClick = { email, password ->
+            viewModel?.onEvent(
+                SignInClick(
+                    email,
+                    password
+                )
+            )
+        }
+    )
 }
 
 @Composable
 fun UI(
-    state: AuthorizationState,
-    onEvent: (AuthorizationEvent) -> Unit,
+    state: AuthorizationUiState,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onSignInClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var emailTextState by remember {
-        mutableStateOf("")
-    }
-
-    var passwordTextState by remember {
-        mutableStateOf("")
-    }
-
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     Surface(
@@ -60,8 +73,8 @@ fun UI(
             )
 
             OutlinedTextField(
-                value = emailTextState,
-                onValueChange = { emailTextState = it },
+                value = state.email,
+                onValueChange = { onEmailChanged(it) },
                 label = { Text(text = stringResource(R.string.authorization_email_label)) },
                 placeholder = { Text(text = stringResource(R.string.authorization_email_placeholder)) },
                 modifier = modifier
@@ -70,8 +83,8 @@ fun UI(
             )
 
             OutlinedTextField(
-                value = passwordTextState,
-                onValueChange = { passwordTextState = it },
+                value = state.password,
+                onValueChange = { onPasswordChanged(it) },
                 label = { Text(text = stringResource(R.string.authorization_password_label)) },
                 placeholder = { Text(text = stringResource(R.string.authorization_password_placeholder)) },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -92,7 +105,7 @@ fun UI(
 
             Button(
                 onClick = {
-                    onEvent(AuthorizationEvent.SignInClick(emailTextState, passwordTextState))
+                    onSignInClick(state.email, state.password)
                 },
                 modifier = modifier
                     .fillMaxWidth()
@@ -129,7 +142,13 @@ fun UI(
 @Composable
 fun AuthorizationFormPreview() {
     GeolanceTheme {
-        AuthorizationForm(
-        )
+        AuthorizationForm()
     }
 }
+
+private fun previewState(): AuthorizationUiState =
+    AuthorizationUiState(
+        isLoading = false,
+        email = "email",
+        password = "password",
+    )
