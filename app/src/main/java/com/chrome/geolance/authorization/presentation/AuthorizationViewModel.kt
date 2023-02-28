@@ -1,5 +1,8 @@
 package com.chrome.geolance.authorization.presentation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.chrome.geolance.authorization.domain.model.AuthorizationUiState
 import com.chrome.geolance.authorization.domain.usecase.SignInUseCase
@@ -15,11 +18,14 @@ class AuthorizationViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
 ) : BaseViewModel<AuthorizationUiState, AuthorizationEvent>() {
 
+    var email by mutableStateOf("")
+        private set
+    var password by mutableStateOf("")
+        private set
+
     override fun createInitialState(): AuthorizationUiState =
         AuthorizationUiState(
             isLoading = false,
-            email = "",
-            password = "",
         )
 
     override suspend fun handleEvent(event: AuthorizationEvent) {
@@ -32,21 +38,13 @@ class AuthorizationViewModel @Inject constructor(
 
     private fun handleEmailChanged(event: AuthorizationEvent.EmailChanged) {
         viewModelScope.launch {
-            setState(
-                currentStateValue.copy(
-                    email = event.email
-                )
-            )
+            email = event.email
         }
     }
 
     private fun handlePasswordChanged(event: AuthorizationEvent.PasswordChanged) {
         viewModelScope.launch {
-            setState(
-                currentStateValue.copy(
-                    password = event.password
-                )
-            )
+            password = event.password
         }
     }
 
@@ -69,6 +67,10 @@ class AuthorizationViewModel @Inject constructor(
                 },
                 ifRight = {
                     Timber.d("SignIn successfully: $it")
+                    currentStateValue.copy(
+                        isLoading = false,
+                        error = null
+                    )
                 }
             )
         }

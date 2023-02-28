@@ -14,10 +14,7 @@ import com.chrome.geolance.ui.theme.AppThemeColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun AuthorizationScreen(
-    navController: NavHostController,
-    viewModel: AuthorizationViewModel = hiltViewModel()
-) {
+fun AuthorizationScreen() {
 
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
