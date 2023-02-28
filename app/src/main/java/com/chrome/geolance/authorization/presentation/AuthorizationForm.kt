@@ -33,7 +33,8 @@ fun AuthorizationForm() {
     val state = uiStatePreviewSafe(viewModel = viewModel, ::previewState)
 
     UI(
-        state = state,
+        email = viewModel?.email ?: "",
+        password = viewModel?.password ?: "",
         onEmailChanged = { viewModel?.onEvent(EmailChanged(it)) },
         onPasswordChanged = { viewModel?.onEvent(PasswordChanged(it)) },
         onSignInClick = { email, password ->
@@ -49,7 +50,8 @@ fun AuthorizationForm() {
 
 @Composable
 fun UI(
-    state: AuthorizationUiState,
+    email: String,
+    password: String,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onSignInClick: (String, String) -> Unit,
@@ -73,7 +75,7 @@ fun UI(
             )
 
             OutlinedTextField(
-                value = state.email,
+                value = email,
                 onValueChange = { onEmailChanged(it) },
                 label = { Text(text = stringResource(R.string.authorization_email_label)) },
                 placeholder = { Text(text = stringResource(R.string.authorization_email_placeholder)) },
@@ -83,7 +85,7 @@ fun UI(
             )
 
             OutlinedTextField(
-                value = state.password,
+                value = password,
                 onValueChange = { onPasswordChanged(it) },
                 label = { Text(text = stringResource(R.string.authorization_password_label)) },
                 placeholder = { Text(text = stringResource(R.string.authorization_password_placeholder)) },
@@ -105,7 +107,7 @@ fun UI(
 
             Button(
                 onClick = {
-                    onSignInClick(state.email, state.password)
+                    onSignInClick(email, password)
                 },
                 modifier = modifier
                     .fillMaxWidth()
@@ -149,6 +151,4 @@ fun AuthorizationFormPreview() {
 private fun previewState(): AuthorizationUiState =
     AuthorizationUiState(
         isLoading = false,
-        email = "email",
-        password = "password",
     )
