@@ -1,5 +1,6 @@
-package com.chrome.geolance.authorization.presentation
+package com.chrome.geolance.authorization.presentation.authorization
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -21,31 +22,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chrome.geolance.R
 import com.chrome.geolance.authorization.domain.model.AuthorizationUiState
-import com.chrome.geolance.authorization.presentation.AuthorizationEvent.*
 import com.chrome.geolance.core.ui.hiltViewModelPreviewSafe
 import com.chrome.geolance.core.ui.uiStatePreviewSafe
 import com.chrome.geolance.ui.theme.GeolanceTheme
 
 @Composable
-fun AuthorizationForm() {
-    val viewModel: AuthorizationViewModel? = hiltViewModelPreviewSafe()
+fun AuthorizationScreen(
+    goToRegistration: () -> Unit
+) {
 
-    val state = uiStatePreviewSafe(viewModel = viewModel, ::previewState)
+    Surface {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val viewModel: AuthorizationViewModel? = hiltViewModelPreviewSafe()
 
-    UI(
-        email = viewModel?.email ?: "",
-        password = viewModel?.password ?: "",
-        onEmailChanged = { viewModel?.onEvent(EmailChanged(it)) },
-        onPasswordChanged = { viewModel?.onEvent(PasswordChanged(it)) },
-        onSignInClick = { email, password ->
-            viewModel?.onEvent(
-                SignInClick(
-                    email,
-                    password
-                )
+            val state = uiStatePreviewSafe(viewModel = viewModel, ::previewState)
+
+            UI(
+                email = viewModel?.email ?: "",
+                password = viewModel?.password ?: "",
+                onEmailChanged = { viewModel?.onEvent(AuthorizationEvent.EmailChanged(it)) },
+                onPasswordChanged = { viewModel?.onEvent(AuthorizationEvent.PasswordChanged(it)) },
+                onSignInClick = { email, password ->
+                    viewModel?.onEvent(
+                        AuthorizationEvent.SignInClick(
+                            email,
+                            password
+                        )
+                    )
+                },
+                goToRegistration
             )
         }
-    )
+    }
 }
 
 @Composable
@@ -55,6 +67,7 @@ fun UI(
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onSignInClick: (String, String) -> Unit,
+    goToRegistration: (() -> Unit),
     modifier: Modifier = Modifier
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -129,7 +142,10 @@ fun UI(
             ) {
                 Text(
                     text = stringResource(R.string.authorization_signup),
-                    color = MaterialTheme.colors.primary
+                    color = MaterialTheme.colors.primary,
+                    modifier = Modifier.clickable {
+                        goToRegistration()
+                    }
                 )
                 Text(
                     text = stringResource(R.string.authorization_forgot_password),
@@ -142,13 +158,10 @@ fun UI(
 
 @Preview
 @Composable
-fun AuthorizationFormPreview() {
+fun AuthorizationScreenPreview() {
     GeolanceTheme {
-        AuthorizationForm()
+        AuthorizationScreen {}
     }
 }
 
-private fun previewState(): AuthorizationUiState =
-    AuthorizationUiState(
-        isLoading = false,
-    )
+private fun previewState(): AuthorizationUiState = AuthorizationUiState(isLoading = false)
