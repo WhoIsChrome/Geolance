@@ -1,4 +1,4 @@
-package com.chrome.geolance.authorization.presentation
+package com.chrome.geolance.authorization.presentation.authorization
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

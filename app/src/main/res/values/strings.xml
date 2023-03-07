@@ -2,10 +2,14 @@
     <string name="app_name">Geolance</string>
     <string name="authorization_title">Вход</string>
     <string name="authorization_email_label">Email</string>
-    <string name="authorization_password_label">Password</string>
+    <string name="authorization_password_label">Пароль</string>
     <string name="authorization_email_placeholder">example@example.com</string>
-    <string name="authorization_password_placeholder">************</string>
+    <string name="authorization_password_placeholder" translatable="false">************</string>
     <string name="authorization_signin">Войти</string>
     <string name="authorization_signup">Зарегистрироваться</string>
     <string name="authorization_forgot_password">Забыли пароль?</string>
+    <string name="registration_signin">Регистрация</string>
+    <string name="registration_first_name">Имя</string>
+    <string name="registration_last_name">Фамилия</string>
+    <string name="registration_go_to_signin">Уже есть аккаунт? Войти</string>
 </resources>

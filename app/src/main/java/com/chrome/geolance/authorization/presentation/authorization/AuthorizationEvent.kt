@@ -1,4 +1,4 @@
-package com.chrome.geolance.authorization.presentation
+package com.chrome.geolance.authorization.presentation.authorization
 
 sealed interface AuthorizationEvent {
 
